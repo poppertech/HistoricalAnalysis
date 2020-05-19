@@ -39,23 +39,17 @@ namespace HistoricalAnalysis
             }
         }
 
-        public static void CreateParentIntervalsFiles()
+        public static void CreateHistoricalIntervals()
         {
             var returnsDirectory = Config.SubDirectories[1];
-            var parentIntervalsDirectory = Config.SubDirectories[2];
-            var parentFiles = returnsDirectory.GetFiles($"Config.ParentTicker*");
-            var parentFile = parentFiles[0];
-            var childFiles = returnsDirectory.GetFiles().Except(parentFiles);
+            var historicalIntervalsDirectory = Config.SubDirectories[2];
 
-            var parentDictionary = new Dictionary<DateTime, decimal>();
-            var parentLines = File.ReadAllLines(parentFile.FullName);
-            foreach (var line in parentLines)
+            var returnsFiles = returnsDirectory.GetFiles();
+            foreach (var returnsFile in returnsFiles)
             {
-                var splitLine = line.Split(",");
+                var lines = File.ReadAllLines(returnsFile.FullName);
+
             }
-
-
-
         }
     }
 

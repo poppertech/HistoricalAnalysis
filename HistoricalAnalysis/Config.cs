@@ -13,5 +13,6 @@ namespace HistoricalAnalysis
         public static Uri BaseQueryUri = new Uri(@"https://query1.finance.yahoo.com/v7/finance/download/");
         public static string[] StockTickers = new[] { "SPY", "UNH" };
         public static string ParentTicker = StockTickers[0];
+        public static HistoricalIntervals IntervalPercentiles = new HistoricalIntervals { Worst = .1M, Likely = .5M, Best = .9M };
     }
 }
