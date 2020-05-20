@@ -33,8 +33,8 @@ namespace HistoricalAnalysis
             {
                 var line = lines[cnt];
                 var splitLine = line.Split(",");
-                var date = ParseDate(splitLine);
-                var adjustedClose = ParseAdjustedClose(splitLine);
+                var date = splitLine[0].ParseDate();
+                var adjustedClose = splitLine[5].ParseDecimal();
                 if (cnt == firstLine && date.HasValue && adjustedClose.HasValue)
                 {
                     lastClose = adjustedClose.Value;
@@ -50,22 +50,6 @@ namespace HistoricalAnalysis
             return stringBuilder.ToString();
         }
 
-        private static DateTime? ParseDate(string[] splitLine)
-        {
-            var isParsedDate = DateTime.TryParse(splitLine[0], out DateTime date);
-            if (isParsedDate && date > DateTime.MinValue)
-                return date;
-
-            return null;
-        }
-
-        private static decimal? ParseAdjustedClose(string[] splitLine)
-        {
-            var isParsedAdjustedClose = decimal.TryParse(splitLine[5], out decimal adjustedClose);
-            if (isParsedAdjustedClose && adjustedClose > 0)
-                return adjustedClose;
-
-            return null;
-        }
+ 
     }
 }

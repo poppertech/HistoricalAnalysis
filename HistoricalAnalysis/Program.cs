@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 
 namespace HistoricalAnalysis
 {
@@ -15,6 +10,7 @@ namespace HistoricalAnalysis
             //DeleteExistingData();
             //DownloadRawData();
             //ReturnsFilesWriter.CreateReturnsFiles();
+            var returnsDictionaries = ReturnsFileReader.CreateReturnsDictionaries();
         }
 
         public static void DeleteExistingData()
@@ -39,18 +35,6 @@ namespace HistoricalAnalysis
             }
         }
 
-        public static void CreateHistoricalIntervals()
-        {
-            var returnsDirectory = Config.SubDirectories[1];
-            var historicalIntervalsDirectory = Config.SubDirectories[2];
-
-            var returnsFiles = returnsDirectory.GetFiles();
-            foreach (var returnsFile in returnsFiles)
-            {
-                var lines = File.ReadAllLines(returnsFile.FullName);
-
-            }
-        }
     }
 
 }
