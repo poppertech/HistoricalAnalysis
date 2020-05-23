@@ -14,5 +14,8 @@ namespace HistoricalAnalysis
         public static string[] StockTickers = new[] { "SPY", "UNH" };
         public static string ParentTicker = StockTickers[0];
         public static HistoricalIntervals IntervalPercentiles = new HistoricalIntervals { Worst = .1M, Likely = .5M, Best = .9M };
+        public static int TradingDaysPerYear = 252;
+        public static int BaseCumulativeReturn = 100;
+        public static int NumberSimulatedAnnualReturns = 1000;
     }
 }
