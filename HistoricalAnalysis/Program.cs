@@ -40,25 +40,58 @@ namespace HistoricalAnalysis
             var parentIntervalsPath = Path.Combine(intervalsDirectory.FullName, Config.ParentTicker + ".json");
             var parentIntervalsContent = File.ReadAllText(parentIntervalsPath);
             var parentIntervals = JsonConvert.DeserializeObject<HistoricalIntervals>(parentIntervalsContent);
-            
+
+            var tailDirectories = simulationsDirectory.GetDirectories();
+            var parentDictionary = returnsDictionaries[Config.ParentTicker];
 
             foreach (var ticker in returnsDictionaries.Keys)
             {
-                var returnsDictionary = returnsDictionaries[ticker];
-                if(ticker == Config.ParentTicker)
+                if (ticker == Config.ParentTicker)
                 {
-                    var contents = CreateParentSimulatedReturnsContent(returnsDictionary.Values.ToArray());
+                    var contents = CreateSimulatedReturnsContent(parentDictionary.Values.ToArray());
                     var path = Path.Combine(simulationsDirectory.FullName, ticker + ".csv");
                     File.AppendAllText(path, contents);
                 }
                 else
                 {
-
+                    var childDictionary = returnsDictionaries[ticker];
+                    var groupedReturns = GroupChildReturnsByParentInterval(parentIntervals, parentDictionary, childDictionary);
+                    for (int index = 0; index < tailDirectories.Length; index++)
+                    {
+                        var tailDirectory = tailDirectories[index];
+                        var returns = groupedReturns.GetReturnsByIndex((TailType)index);
+                        var contents = CreateSimulatedReturnsContent(returns);
+                        var path = Path.Combine(tailDirectory.FullName, ticker + ".csv");
+                        File.AppendAllText(path, contents);
+                    }
                 }
             }
         }
 
-        public static string CreateParentSimulatedReturnsContent(decimal[] retts)
+        public static GroupedReturns GroupChildReturnsByParentInterval(
+            HistoricalIntervals parentIntervals,
+            Dictionary<DateTime, decimal> parentDictionary,
+            Dictionary<DateTime, decimal> childDictionary)
+        {
+            var groupedReturns = new GroupedReturns();
+            var combinedDates = parentDictionary.Keys.Intersect(childDictionary.Keys);
+            foreach (var date in combinedDates)
+            {
+                var parentReturn = parentDictionary[date];
+                var childReturn = childDictionary[date];
+                if (parentReturn < parentIntervals.Worst)
+                    groupedReturns.LeftTail.Add(childReturn);
+                else if (parentReturn < parentIntervals.Likely)
+                    groupedReturns.LeftNormal.Add(childReturn);
+                else if (parentReturn < parentIntervals.Best)
+                    groupedReturns.RightNormal.Add(childReturn);
+                else
+                    groupedReturns.RightTail.Add(childReturn);
+            }
+            return groupedReturns;
+        }
+
+        public static string CreateSimulatedReturnsContent(decimal[] retts)
         {
             var stringBuilder = new StringBuilder();
             var simAnnRetts = SimulateAnnualReturns(retts);
@@ -99,5 +132,7 @@ namespace HistoricalAnalysis
             }
             return simCumRetts[Config.TradingDaysPerYear - 1];
         }
+
+
     }
 }
