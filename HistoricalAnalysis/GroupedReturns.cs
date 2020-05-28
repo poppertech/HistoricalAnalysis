@@ -18,7 +18,7 @@ namespace HistoricalAnalysis
         public List<decimal> RightNormal { get; set; }
         public List<decimal> RightTail { get; set; }
 
-        public decimal[] GetReturnsByIndex(TailType tailType)
+        public decimal[] GetReturnsByTailType(TailType tailType)
         {
             switch (tailType)
             {

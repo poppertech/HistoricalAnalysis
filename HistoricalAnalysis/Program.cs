@@ -15,70 +15,66 @@ namespace HistoricalAnalysis
             //Config.SubDirectories.DeleteExistingData();
             //Config.StockTickers.DownloadRawData();
             //ReturnsFilesWriter.CreateReturnsFiles();
-            var returnsDictionaries = ReturnsFileReader.CreateReturnsDictionaries();
-            //CreateIntervals(returnsDictionaries);
-            CreateSimulatedReturns(returnsDictionaries);
-        }
 
-        public static void CreateIntervals(Dictionary<string, Dictionary<DateTime, decimal>> returnsDictionaries)
-        {
-            foreach (var ticker in returnsDictionaries.Keys)
-            {
-                var returnsDictionary = returnsDictionaries[ticker];
-                var returns = returnsDictionary.Values.ToArray();
-                var intervals = new HistoricalIntervals(returns);
-                var jsonIntervals = JsonConvert.SerializeObject(intervals);
-                File.WriteAllText(Path.Combine(Config.SubDirectories[2].FullName, ticker + ".json"), jsonIntervals);
-            }
+            var returnsDictionaries = ReturnsFileReader.CreateReturnsDictionaries();
+            //CreateSimulatedReturns(returnsDictionaries);
         }
 
         public static void CreateSimulatedReturns(Dictionary<string, Dictionary<DateTime, decimal>> returnsDictionaries)
         {
-            var intervalsDirectory = Config.SubDirectories[2];
-            var simulationsDirectory = Config.SubDirectories[3];
-
-            var parentIntervalsPath = Path.Combine(intervalsDirectory.FullName, Config.ParentTicker + ".json");
-            var parentIntervalsContent = File.ReadAllText(parentIntervalsPath);
-            var parentIntervals = JsonConvert.DeserializeObject<HistoricalIntervals>(parentIntervalsContent);
-
-            var tailDirectories = simulationsDirectory.GetDirectories();
-            var parentDictionary = returnsDictionaries[Config.ParentTicker];
-
+            var parentDates = returnsDictionaries[Config.ParentTicker].Keys;
             foreach (var ticker in returnsDictionaries.Keys)
             {
-                if (ticker == Config.ParentTicker)
-                {
-                    var contents = CreateSimulatedReturnsContent(parentDictionary.Values.ToArray());
-                    var path = Path.Combine(simulationsDirectory.FullName, ticker + ".csv");
-                    File.AppendAllText(path, contents);
-                }
-                else
-                {
-                    var childDictionary = returnsDictionaries[ticker];
-                    var groupedReturns = GroupChildReturnsByParentInterval(parentIntervals, parentDictionary, childDictionary);
-                    for (int index = 0; index < tailDirectories.Length; index++)
-                    {
-                        var tailDirectory = tailDirectories[index];
-                        var returns = groupedReturns.GetReturnsByIndex((TailType)index);
-                        var contents = CreateSimulatedReturnsContent(returns);
-                        var path = Path.Combine(tailDirectory.FullName, ticker + ".csv");
-                        File.AppendAllText(path, contents);
-                    }
-                }
+                var childDates = returnsDictionaries[ticker].Keys;
+                var combinedDates = parentDates.Intersect(childDates);
+                
             }
+        }
+
+        public static ConditionalHistoricalIntervals CreateConditionalIntervals(decimal[] parentRetts, decimal[] childRetts)
+        {
+            var parentSimAnnRetts = new decimal[Config.NumberSimulatedAnnualReturns];
+            var childSimAnnRetts = new decimal[Config.NumberSimulatedAnnualReturns];
+            for (int cnt = 0; cnt < Config.NumberSimulatedAnnualReturns; cnt++)
+            {
+                var indices = GetRandomIndices(childRetts.Length);
+                parentSimAnnRetts[cnt] = SimulateAnnualReturn(parentRetts, indices);
+                childSimAnnRetts[cnt] = SimulateAnnualReturn(childRetts, indices);
+            }
+            var parentIntervals = new HistoricalIntervals(parentSimAnnRetts);
+            var groupedReturns = GroupChildReturnsByParentInterval(parentIntervals, parentSimAnnRetts, childSimAnnRetts);
+            var conditionalIntervals = new ConditionalHistoricalIntervals();
+            foreach (TailType tailType in Enum.GetValues(typeof(TailType)))
+            {
+                var intervalReturns = groupedReturns.GetReturnsByTailType(tailType);
+                var childInterval = new HistoricalIntervals(intervalReturns);
+                conditionalIntervals.SetIntervalByTailType(tailType, childInterval);
+            }
+            return conditionalIntervals;
+        }
+
+        public static int[] GetRandomIndices(int maxValue)
+        {
+            var rand = new Random();
+            var indices = new int[Config.TradingDaysPerYear];
+            for (int cnt = 0; cnt < indices.Length; cnt++)
+            {
+                indices[cnt] = rand.Next(0, maxValue);
+            }
+            return indices;
         }
 
         public static GroupedReturns GroupChildReturnsByParentInterval(
             HistoricalIntervals parentIntervals,
-            Dictionary<DateTime, decimal> parentDictionary,
-            Dictionary<DateTime, decimal> childDictionary)
+            decimal[] parentRetts,
+            decimal[] childRetts)
         {
             var groupedReturns = new GroupedReturns();
-            var combinedDates = parentDictionary.Keys.Intersect(childDictionary.Keys);
-            foreach (var date in combinedDates)
+
+            for (int cnt = 0; cnt < Config.NumberSimulatedAnnualReturns; cnt++)
             {
-                var parentReturn = parentDictionary[date];
-                var childReturn = childDictionary[date];
+                var parentReturn = parentRetts[cnt];
+                var childReturn = childRetts[cnt];
                 if (parentReturn < parentIntervals.Worst)
                     groupedReturns.LeftTail.Add(childReturn);
                 else if (parentReturn < parentIntervals.Likely)
@@ -91,35 +87,13 @@ namespace HistoricalAnalysis
             return groupedReturns;
         }
 
-        public static string CreateSimulatedReturnsContent(decimal[] retts)
+        public static decimal SimulateAnnualReturn(decimal[] retts, int[] indices)
         {
-            var stringBuilder = new StringBuilder();
-            var simAnnRetts = SimulateAnnualReturns(retts);
-            foreach (var rett in simAnnRetts)
-            {
-                stringBuilder.AppendLine(rett.ToString());
-            }
-            return stringBuilder.ToString();
-        }
-
-        public static decimal[] SimulateAnnualReturns(decimal[] retts)
-        {
-            var simAnnRetts = new decimal[Config.NumberSimulatedAnnualReturns];
-            for (int cnt = 0; cnt < Config.NumberSimulatedAnnualReturns; cnt++)
-            {
-                simAnnRetts[cnt] = SimulateAnnualReturn(retts);
-            }
-            return simAnnRetts;
-        }
-
-        public static decimal SimulateAnnualReturn(decimal[] retts)
-        {
-            var rand = new Random();
             var simRetts = new decimal[Config.TradingDaysPerYear];
             var simCumRetts = new decimal[Config.TradingDaysPerYear];
             for (int cnt = 0; cnt < Config.TradingDaysPerYear; cnt++)
             {
-                var index = rand.Next(0, retts.Length);
+                var index = indices[cnt];
                 simRetts[cnt] = retts[index];
                 if (cnt == 0)
                 {
@@ -132,7 +106,5 @@ namespace HistoricalAnalysis
             }
             return simCumRetts[Config.TradingDaysPerYear - 1];
         }
-
-
     }
 }
