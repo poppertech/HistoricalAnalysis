@@ -4,14 +4,21 @@ namespace HistoricalAnalysis
 {
     public class ConditionalHistoricalIntervals
     {
-        public ConditionalHistoricalIntervals() { }
+        public ConditionalHistoricalIntervals(GroupedReturns groupedReturns) {
+            foreach (TailType tailType in Enum.GetValues(typeof(TailType)))
+            {
+                var intervalReturns = groupedReturns.GetReturnsByTailType(tailType);
+                var childInterval = new HistoricalIntervals(intervalReturns);
+                SetIntervalByTailType(tailType, childInterval);
+            }
+        }
 
         public HistoricalIntervals LeftTail { get; set; }
         public HistoricalIntervals LeftNormal { get; set; }
         public HistoricalIntervals RightNormal { get; set; }
         public HistoricalIntervals RightTail { get; set; }
 
-        public void SetIntervalByTailType(TailType tailType, HistoricalIntervals intervals)
+        private void SetIntervalByTailType(TailType tailType, HistoricalIntervals intervals)
         {
             switch (tailType)
             {
