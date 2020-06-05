@@ -10,7 +10,7 @@ namespace HistoricalAnalysis
             Child = new decimal[Config.NumberSimulatedAnnualReturns];
             for (int cnt = 0; cnt < Config.NumberSimulatedAnnualReturns; cnt++)
             {
-                var indices = GetRandomIndices(childRetts.Length);
+                var indices = GetRandomIndices(parentRetts.Length);
                 Parent[cnt] = SimulateAnnualReturn(parentRetts, indices);
                 if(childRetts != null && childRetts.Length > 0)
                     Child[cnt] = SimulateAnnualReturn(childRetts, indices);

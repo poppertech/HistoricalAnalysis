@@ -6,7 +6,7 @@ namespace HistoricalAnalysis
     public class GroupedReturns
     {
         public GroupedReturns(
-            HistoricalIntervals parentIntervals,
+            Intervals parentIntervals,
             decimal[] parentRetts,
             decimal[] childRetts)
         {

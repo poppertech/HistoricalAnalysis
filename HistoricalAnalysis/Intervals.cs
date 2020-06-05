@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Linq;
 
 namespace HistoricalAnalysis
 {
-    public class HistoricalIntervals
+    public class Intervals
     {
-        public HistoricalIntervals() { }
+        public Intervals() { }
 
-        public HistoricalIntervals(decimal[] returns)
+        public Intervals(decimal[] returns)
         {
             var count = returns.Length;
             Array.Sort(returns);
@@ -26,5 +25,6 @@ namespace HistoricalAnalysis
         public decimal Likely { get; set; }
         public decimal Best { get; set; }
         public decimal Maximum { get; set; }
+
     }
 }

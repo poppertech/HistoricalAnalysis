@@ -2,23 +2,23 @@
 
 namespace HistoricalAnalysis
 {
-    public class ConditionalHistoricalIntervals
+    public class ConditionalAnalysis
     {
-        public ConditionalHistoricalIntervals(GroupedReturns groupedReturns) {
+        public ConditionalAnalysis(GroupedReturns groupedReturns) {
             foreach (TailType tailType in Enum.GetValues(typeof(TailType)))
             {
                 var intervalReturns = groupedReturns.GetReturnsByTailType(tailType);
-                var childInterval = new HistoricalIntervals(intervalReturns);
-                SetIntervalByTailType(tailType, childInterval);
+                var unconditionalAnalysis = new UnconditionalAnalysis(intervalReturns);
+                SetAnalysisByTailType(tailType, unconditionalAnalysis);
             }
         }
 
-        public HistoricalIntervals LeftTail { get; set; }
-        public HistoricalIntervals LeftNormal { get; set; }
-        public HistoricalIntervals RightNormal { get; set; }
-        public HistoricalIntervals RightTail { get; set; }
+        public UnconditionalAnalysis LeftTail { get; set; }
+        public UnconditionalAnalysis LeftNormal { get; set; }
+        public UnconditionalAnalysis RightNormal { get; set; }
+        public UnconditionalAnalysis RightTail { get; set; }
 
-        private void SetIntervalByTailType(TailType tailType, HistoricalIntervals intervals)
+        private void SetAnalysisByTailType(TailType tailType, UnconditionalAnalysis intervals)
         {
             switch (tailType)
             {
