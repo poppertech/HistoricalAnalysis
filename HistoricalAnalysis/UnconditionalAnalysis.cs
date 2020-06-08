@@ -11,14 +11,14 @@ namespace HistoricalAnalysis
         {
             Intervals = new Intervals(returns);
             Statistics = new Statistics(returns);
-            Histogram = new Histogram().GetHistogramData(returns).ToArray();
+            Histogram = new Histogram(returns);
         }
 
         public Intervals Intervals { get; set; }
 
         public Statistics Statistics { get; set; }
 
-        public HistogramDatum[] Histogram { get; set; }
+        public Histogram Histogram { get; set; }
 
     }
 }

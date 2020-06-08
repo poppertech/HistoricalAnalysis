@@ -5,9 +5,10 @@ namespace HistoricalAnalysis
 {
     public class Histogram
     {
-        public IList<HistogramDatum> GetHistogramData(decimal[] simulations, int num = 30)
+        public Histogram(decimal[] simulations, int num = 30)
         {
-            var histogramDataArray = new HistogramDatum[num];
+            Intervals = new decimal[num];
+            Frequencies = new decimal[num];
             decimal lastCumulativeFrequency = 0;
             decimal dblNum = num;
             var globalXMax = simulations.Max();
@@ -16,19 +17,19 @@ namespace HistoricalAnalysis
             sortedSimulations.Sort();
             for (int cnt = 1; cnt <= num; cnt++)
             {
-                var histogramData = new HistogramDatum();
                 var interval = (cnt / dblNum) * (globalXMax - globalXMin) + globalXMin;
-                histogramData.Interval = interval;
+                Intervals[cnt-1] = interval;
                 var index = sortedSimulations.BinarySearch(interval);
                 decimal cumulativeCount = index < 0 ? ~index : index + 1;
                 decimal totalCount = simulations.Length;
                 var cumulativeFrequency = cumulativeCount / totalCount;
                 var frequency = cumulativeFrequency - lastCumulativeFrequency;
-                histogramData.Frequency = frequency;
+                Frequencies[cnt-1] = frequency;
                 lastCumulativeFrequency = cumulativeFrequency;
-                histogramDataArray[cnt - 1] = histogramData;
             }
-            return histogramDataArray;
         }
+
+        public decimal[] Intervals { get; set; }
+        public decimal[] Frequencies { get; set; }
     }
 }

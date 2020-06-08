@@ -16,6 +16,6 @@ namespace HistoricalAnalysis
         public static Intervals IntervalPercentiles = new Intervals { Worst = .1M, Likely = .5M, Best = .9M };
         public static int TradingDaysPerYear = 252;
         public static int BaseCumulativeReturn = 100;
-        public static int NumberSimulatedAnnualReturns = 1000;
+        public static int NumberSimulatedAnnualReturns = 10000;
     }
 }
