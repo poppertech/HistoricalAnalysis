@@ -4,7 +4,9 @@ namespace HistoricalAnalysis
 {
     public class ConditionalAnalysis
     {
-        public ConditionalAnalysis(GroupedReturns groupedReturns) {
+        public ConditionalAnalysis(SimulatedAnnualReturns simulatedAnnualReturns) {
+            var parentIntervals = new Intervals(simulatedAnnualReturns.Parent);
+            var groupedReturns = new GroupedReturns(parentIntervals, simulatedAnnualReturns.Parent, simulatedAnnualReturns.Child);
             foreach (TailType tailType in Enum.GetValues(typeof(TailType)))
             {
                 var intervalReturns = groupedReturns.GetReturnsByTailType(tailType);

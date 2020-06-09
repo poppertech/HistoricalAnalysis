@@ -12,9 +12,7 @@
             else
             {
                 UnconditionalAnalysis = new UnconditionalAnalysis(simulatedAnnualReturns.Child);
-                var parentIntervals = new Intervals(simulatedAnnualReturns.Parent);
-                var groupedReturns = new GroupedReturns(parentIntervals, simulatedAnnualReturns.Parent, simulatedAnnualReturns.Child);
-                ConditionalAnalysis = new ConditionalAnalysis(groupedReturns);
+                ConditionalAnalysis = new ConditionalAnalysis(simulatedAnnualReturns);
             }
         }
 

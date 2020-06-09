@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-namespace HistoricalAnalysis
+﻿namespace HistoricalAnalysis
 {
     public class UnconditionalAnalysis
     {
