@@ -10,7 +10,8 @@ namespace HistoricalAnalysis
             foreach (TailType tailType in Enum.GetValues(typeof(TailType)))
             {
                 var intervalReturns = groupedReturns.GetReturnsByTailType(tailType);
-                var unconditionalAnalysis = new UnconditionalAnalysis(intervalReturns);
+                var parentIntervalReturns = groupedReturns.GetParentReturnsByTailType(tailType);
+                var unconditionalAnalysis = new UnconditionalAnalysis(intervalReturns, parentIntervalReturns);
                 SetAnalysisByTailType(tailType, unconditionalAnalysis);
             }
         }

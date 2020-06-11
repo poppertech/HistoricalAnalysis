@@ -11,7 +11,7 @@
             }
             else
             {
-                UnconditionalAnalysis = new UnconditionalAnalysis(simulatedAnnualReturns.Child);
+                UnconditionalAnalysis = new UnconditionalAnalysis(simulatedAnnualReturns.Child, simulatedAnnualReturns.Parent);
                 ConditionalAnalysis = new ConditionalAnalysis(simulatedAnnualReturns);
             }
         }

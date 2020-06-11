@@ -4,10 +4,10 @@
     {
         public UnconditionalAnalysis() { }
 
-        public UnconditionalAnalysis(decimal[] returns)
+        public UnconditionalAnalysis(decimal[] returns, decimal[] parentReturns = null)
         {
             Intervals = new Intervals(returns);
-            Statistics = new Statistics(returns);
+            Statistics = new Statistics(returns, parentReturns);
             Histogram = new Histogram(returns);
         }
 
