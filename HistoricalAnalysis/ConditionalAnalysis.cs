@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.IO;
 
 namespace HistoricalAnalysis
 {
@@ -7,6 +9,7 @@ namespace HistoricalAnalysis
         public ConditionalAnalysis(SimulatedAnnualReturns simulatedAnnualReturns) {
             var parentIntervals = new Intervals(simulatedAnnualReturns.Parent);
             var groupedReturns = new GroupedReturns(parentIntervals, simulatedAnnualReturns.Parent, simulatedAnnualReturns.Child);
+            //File.WriteAllText(@"C:\Users\bwynn\Desktop\HistoricalAnalysis\groupedretts.json", JsonConvert.SerializeObject(groupedReturns));
             foreach (TailType tailType in Enum.GetValues(typeof(TailType)))
             {
                 var intervalReturns = groupedReturns.GetReturnsByTailType(tailType);
@@ -21,21 +24,21 @@ namespace HistoricalAnalysis
         public UnconditionalAnalysis RightNormal { get; set; }
         public UnconditionalAnalysis RightTail { get; set; }
 
-        private void SetAnalysisByTailType(TailType tailType, UnconditionalAnalysis intervals)
+        private void SetAnalysisByTailType(TailType tailType, UnconditionalAnalysis analysis)
         {
             switch (tailType)
             {
                 case TailType.LeftTail:
-                    LeftTail = intervals;
+                    LeftTail = analysis;
                     return;
                 case TailType.LeftNormal:
-                    LeftNormal = intervals;
+                    LeftNormal = analysis;
                     return;
                 case TailType.RightNormal:
-                    RightNormal = intervals;
+                    RightNormal = analysis;
                     return;
                 case TailType.RightTail:
-                    RightTail = intervals;
+                    RightTail = analysis;
                     return;
                 default:
                     throw new NotImplementedException();

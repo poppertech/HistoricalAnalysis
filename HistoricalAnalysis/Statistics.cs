@@ -19,7 +19,7 @@ namespace HistoricalAnalysis
             {
                 var parentInputReturns = parentRetts.Select(rett => (double)rett).ToArray();
                 var parentMean = parentInputReturns.Average();
-                var parentDemeanedReturns = parentInputReturns.Select(rett => rett - Mean).ToArray();
+                var parentDemeanedReturns = parentInputReturns.Select(rett => rett - parentMean).ToArray();
                 var parentStdev = CalculateStdev(parentDemeanedReturns);
                 Covariance = CalculateCovariance(deMeanedReturns, parentDemeanedReturns);
                 Correlation = Covariance / (Stdev * parentStdev);
@@ -38,20 +38,21 @@ namespace HistoricalAnalysis
 
         private double CalculateStdev(IList<double> deMeanedReturns)
         {
+            double count = deMeanedReturns.Count;
             double sumSq = deMeanedReturns.Sum(rett => Math.Pow(rett, 2));
-            return Math.Pow(sumSq / (deMeanedReturns.Count - 1), .5);
+            return Math.Pow(sumSq / (count - 1), .5);
         }
 
         private double CalculateSkew(IList<double> deMeanedReturns)
         {
-            var count = deMeanedReturns.Count;
+            double count = deMeanedReturns.Count;
             double sumCube = deMeanedReturns.Sum(rett => Math.Pow(rett, 3));
             return (count / ((count - 1) * (count - 2))) * (sumCube / Math.Pow(Stdev, 3));
         }
 
         private double CalculateKurt(IList<double> deMeanedReturns)
         {
-            var count = deMeanedReturns.Count;
+            double count = deMeanedReturns.Count;
             double sumPow4 = deMeanedReturns.Sum(rett => Math.Pow(rett, 4));
             double coef = (((count) * (count + 1)) / ((count - 1) * (count - 2) * (count - 3)));
             double adjFact = (-3 * ((Math.Pow(count - 1, 2)) / ((count - 2) * (count - 3))));
@@ -61,11 +62,12 @@ namespace HistoricalAnalysis
         private double CalculateCovariance(IList<double> deMeanedReturns, IList<double> parentDemeanedReturns)
         {
             double sumSq = 0;
+            double count = deMeanedReturns.Count;
             for (int cnt = 0; cnt < deMeanedReturns.Count; cnt++)
             {
                 sumSq += deMeanedReturns[cnt] * parentDemeanedReturns[cnt];
             }
-            return sumSq / (deMeanedReturns.Count - 1);
+            return sumSq / (count - 1);
         }
     }
 }

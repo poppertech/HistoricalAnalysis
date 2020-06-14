@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 
 namespace HistoricalAnalysis
 {
@@ -9,15 +9,16 @@ namespace HistoricalAnalysis
         public Intervals(decimal[] returns)
         {
             var count = returns.Length;
-            Array.Sort(returns);
+            var sortedReturns = new List<decimal>(returns);
+            sortedReturns.Sort();
             var worstIndex = (int)(count * Config.IntervalPercentiles.Worst);
             var likelyIndex = (int)(count * Config.IntervalPercentiles.Likely);
             var bestIndex = (int)(count * Config.IntervalPercentiles.Best);
-            Minimum = returns[0];
-            Worst = returns[worstIndex];
-            Likely = returns[likelyIndex];
-            Best = returns[bestIndex];
-            Maximum = returns[count - 1];
+            Minimum = sortedReturns[0];
+            Worst = sortedReturns[worstIndex];
+            Likely = sortedReturns[likelyIndex];
+            Best = sortedReturns[bestIndex];
+            Maximum = sortedReturns[count - 1];
         }
 
         public decimal Minimum { get; set; }

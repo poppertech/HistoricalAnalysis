@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace HistoricalAnalysis
 {
@@ -13,8 +14,18 @@ namespace HistoricalAnalysis
                 var indices = GetRandomIndices(parentRetts.Length);
                 Parent[cnt] = SimulateAnnualReturn(parentRetts, indices);
                 if(childRetts != null && childRetts.Length > 0)
+                {
+                    //File.AppendAllText(@"C:\Users\bwynn\Desktop\HistoricalAnalysis\indices.csv", string.Join(',', indices) + Environment.NewLine);
                     Child[cnt] = SimulateAnnualReturn(childRetts, indices);
+                }
+
             }
+            //if(Child.Length > 0)
+            //{
+            //    File.WriteAllLines(@"C:\Users\bwynn\Desktop\HistoricalAnalysis\child.csv", Array.ConvertAll(Child, (d) => d.ToString()));
+            //    File.WriteAllLines(@"C:\Users\bwynn\Desktop\HistoricalAnalysis\parent.csv", Array.ConvertAll(Parent, (d) => d.ToString()));
+            //}
+
         }
 
         public decimal[] Parent { get; set; }
