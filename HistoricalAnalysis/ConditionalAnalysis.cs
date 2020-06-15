@@ -9,7 +9,6 @@ namespace HistoricalAnalysis
         public ConditionalAnalysis(SimulatedAnnualReturns simulatedAnnualReturns) {
             var parentIntervals = new Intervals(simulatedAnnualReturns.Parent);
             var groupedReturns = new GroupedReturns(parentIntervals, simulatedAnnualReturns.Parent, simulatedAnnualReturns.Child);
-            //File.WriteAllText(@"C:\Users\bwynn\Desktop\HistoricalAnalysis\groupedretts.json", JsonConvert.SerializeObject(groupedReturns));
             foreach (TailType tailType in Enum.GetValues(typeof(TailType)))
             {
                 var intervalReturns = groupedReturns.GetReturnsByTailType(tailType);

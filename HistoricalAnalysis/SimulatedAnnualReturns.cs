@@ -9,23 +9,13 @@ namespace HistoricalAnalysis
         {
             Parent = new decimal[Config.NumberSimulatedAnnualReturns];
             Child = childRetts != null && childRetts.Length > 0 ? new decimal[Config.NumberSimulatedAnnualReturns] : new decimal[0];
-            //using (var sw = File.AppendText(@"C:\Users\bwynn\Desktop\HistoricalAnalysis\indices.csv")) { 
-                for (int cnt = 0; cnt < Config.NumberSimulatedAnnualReturns; cnt++)
-                {
-                    var indices = GetRandomIndices(parentRetts.Length);
-                    Parent[cnt] = SimulateAnnualReturn(parentRetts, indices);
-                    if(childRetts != null && childRetts.Length > 0)
-                    {
-            //            sw.WriteLine(string.Join(',', indices));
-                        Child[cnt] = SimulateAnnualReturn(childRetts, indices);
-                    }
-                }
-            //}
-            //if(Child.Length > 0)
-            //{
-            //    File.WriteAllLines(@"C:\Users\bwynn\Desktop\HistoricalAnalysis\child.csv", Array.ConvertAll(Child, (d) => d.ToString()));
-            //    File.WriteAllLines(@"C:\Users\bwynn\Desktop\HistoricalAnalysis\parent.csv", Array.ConvertAll(Parent, (d) => d.ToString()));
-            //}
+            for (int cnt = 0; cnt < Config.NumberSimulatedAnnualReturns; cnt++)
+            {
+                var indices = GetRandomIndices(parentRetts.Length);
+                Parent[cnt] = SimulateAnnualReturn(parentRetts, indices);
+                if (childRetts != null && childRetts.Length > 0)
+                    Child[cnt] = SimulateAnnualReturn(childRetts, indices);
+            }
         }
 
         public decimal[] Parent { get; set; }
